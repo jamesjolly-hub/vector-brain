@@ -1,0 +1,24 @@
+name               = "vector-brain"
+main               = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding        = "DB"
+database_name  = "vector-brain"
+database_id    = "3e14ab04-5c3f-43cc-9db9-cb95a93980be"
+migrations_dir = "migrations"
+
+[[vectorize]]
+binding     = "VECTOR_INDEX"
+index_name  = "corpus-index"
+
+[ai]
+binding = "AI"
+
+[vars]
+EMBED_MODEL     = "@cf/baai/bge-base-en-v1.5"
+GEN_MODEL       = "@cf/meta/llama-3.1-8b-instruct"
+TOP_K           = "5"
+MAX_GEN_TOKENS  = "512"
+# Pre-deploy: npx wrangler vectorize create corpus-index --dimensions 768 --metric cosine

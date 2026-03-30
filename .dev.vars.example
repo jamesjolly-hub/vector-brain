@@ -1,0 +1,2 @@
+# Copy to .dev.vars for local development (never commit .dev.vars)
+# No secrets required — all config via wrangler.toml [vars]

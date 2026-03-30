@@ -1,0 +1,21 @@
+# Test-only wrangler config — omits Workers AI and Vectorize bindings.
+# Both require the Cloudflare production runtime / remote proxy and cannot be
+# mocked in miniflare. The insert / list / get / delete handlers guard
+# AI + Vectorize calls behind null checks so D1 tests pass cleanly.
+
+name               = "vector-brain"
+main               = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding        = "DB"
+database_name  = "vector-brain"
+database_id    = "3e14ab04-5c3f-43cc-9db9-cb95a93980be"
+migrations_dir = "migrations"
+
+[vars]
+EMBED_MODEL     = "@cf/baai/bge-base-en-v1.5"
+GEN_MODEL       = "@cf/meta/llama-3.1-8b-instruct"
+TOP_K           = "5"
+MAX_GEN_TOKENS  = "512"
