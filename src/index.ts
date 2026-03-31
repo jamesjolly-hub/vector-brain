@@ -28,7 +28,9 @@ interface Document {
   id: string;
   title: string;
   content: string;
+  /** source and source_url are both accepted; stored and returned as `source` */
   source?: string;
+  source_url?: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -176,13 +178,14 @@ async function handleInsert(request: Request, env: Env): Promise<Response> {
        title=excluded.title, content=excluded.content, source=excluded.source,
        tags=excluded.tags, updated_at=excluded.updated_at`
   )
-    .bind(id, body.title, body.content, body.source ?? null, JSON.stringify(tags), now, now)
+    .bind(id, body.title, body.content, body.source_url ?? body.source ?? null, JSON.stringify(tags), now, now)
     .run();
 
   // Embed and upsert into Vectorize (skipped if bindings absent, e.g. in test environment)
   if (env.AI && env.VECTOR_INDEX) {
     const vector = await embed(env.AI, env.EMBED_MODEL, `${body.title}\n${body.content}`);
-    await env.VECTOR_INDEX.upsert([{ id, values: vector, metadata: { title: body.title, source: body.source ?? "" } }]);
+    const sourceVal = body.source_url ?? body.source ?? "";
+    await env.VECTOR_INDEX.upsert([{ id, values: vector, metadata: { title: body.title, source: sourceVal } }]);
   }
 
   // Update stats — derive count from actual table to avoid drift on upsert
@@ -221,7 +224,7 @@ async function handleBulkInsert(request: Request, env: Env): Promise<Response> {
       id,
       item.title ?? "",
       item.content ?? "",
-      item.source ?? null,
+      item.source_url ?? item.source ?? null,
       JSON.stringify(item.tags ?? []),
       now,
       now
@@ -239,7 +242,7 @@ async function handleBulkInsert(request: Request, env: Env): Promise<Response> {
       vectors.push({
         id: ids[i],
         values: embeddingResult.data[i],
-        metadata: { title: item.title ?? "", source: item.source ?? "" },
+        metadata: { title: item.title ?? "", source: item.source_url ?? item.source ?? "" },
       });
     });
     await env.VECTOR_INDEX.upsert(vectors);
