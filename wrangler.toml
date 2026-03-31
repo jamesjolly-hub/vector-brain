@@ -18,7 +18,7 @@ binding = "AI"
 
 [vars]
 EMBED_MODEL     = "@cf/baai/bge-base-en-v1.5"
-GEN_MODEL       = "@cf/meta/llama-3.1-8b-instruct"
+GEN_MODEL       = "@cf/meta/llama-3.1-8b-instruct-fp8-fast"
 TOP_K           = "5"
 MAX_GEN_TOKENS  = "512"
 # Pre-deploy: npx wrangler vectorize create corpus-index --dimensions 768 --metric cosine
